@@ -1,0 +1,12 @@
+<?php
+	
+	require_once '../vendor/autoload.php';
+	use Crema\CurlRequest;
+	
+	$curl = new CurlRequest();
+	$response = $curl->get("https://dummyjson.com/products/1");
+	
+	header('Content-Type: application/json');
+	echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+	
+?>

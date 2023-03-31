@@ -1,0 +1,16 @@
+{
+	"name": "crema/fetcher",
+	"description": "PHP Curl Wrapper",
+	"type": "library",
+	"autoload": {
+		"psr-4": {
+			"Crema\\": "src/"
+		}
+	},
+	"authors": [
+		{
+			"name": "Stephen Ginn",
+			"email": "callaginn@users.noreply.github.com"
+		}
+	]
+}
