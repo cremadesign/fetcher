@@ -18,7 +18,7 @@ $curl = new CurlRequest();
 $response = $curl->get("https://example.com/sample.json", $data, $token);
 
 header('Content-Type: application/json');
-echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+echo json_encode($response->json(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 ```
 
 ### Fetcher Example

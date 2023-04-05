@@ -1,0 +1,44 @@
+{
+	"dummyjson": {
+		"auth": {
+			"method": "POST",
+			"url": "https://dummyjson.com/auth/login",
+			"headers": [],
+			"payload": {
+				"username": "kminchelle",
+				"password": "0lelplR"
+			}
+		},
+		"get": {
+			"method": "GET",
+			"url": "https://dummyjson.com/products",
+			"headers": [],
+			"payload": ""
+		},
+		"post": {
+			"method": "POST",
+			"url": "https://dummyjson.com/products/add",
+			"headers": [],
+			"payload": {
+				"title": "BMW Pencil"
+			}
+		},
+		"success": {
+			"method": "GET",
+			"url": "https://dummyjson.com/http/200",
+			"headers": {
+				"X-Custom": "Custom Header Here",
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			"payload": ""
+		}
+	},
+	"pingboard": {
+		"auth": {
+			"method": "POST",
+			"url": "https://app.pingboard.com/oauth/token?grant_type=client_credentials",
+			"headers": [],
+			"payload": {}
+		}
+	}
+}
