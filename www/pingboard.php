@@ -5,27 +5,28 @@
 	
 	class Pingboard {
 		public function __construct($credentials) {
+			$this->api = "https://app.pingboard.com/api/v2";
 			$this->cacheDir = 'data/.cached';
 			$this->cacheLife = '120'; // in seconds
-			
-			if (!is_dir($this->cacheDir)) {
-				mkdir($this->cacheDir, 0777, true);
-			}
-			
+			$this->clientSecret = $credentials->client_secret;
+			$this->clientId = $credentials->client_id;
+			$this->auth();
+		}
+		
+		public function auth() {
 			// Get Authentication Token
-			$this->setClientSecret($credentials->client_secret);
-			$this->setClientId($credentials->client_id);
-			$this->api = "https://app.pingboard.com/api/v2";
 			$this->auth_url = "https://app.pingboard.com/oauth/token?grant_type=client_credentials";
 			$this->payload = [
-				'client_id' => $credentials->client_id,
-				'client_secret' => $credentials->client_secret
+				'client_id' => $this->clientId,
+				'client_secret' => $this->clientSecret
 			];
 			
 			$this->curl = new CurlRequest();
-			$response = $this->curl->request("POST", $this->auth_url, $this->payload, []);
+			$response = $this->curl->request("POST", $this->auth_url, $this->payload);
 			
-			$this->token = $response->json();
+			$this->token = $this->curl->json();
+			$this->access_token = $this->token['access_token'];
+			
 			$this->curl->setRequestHeaders([
 				"Authorization" => "Bearer " . $this->token['access_token']
 			]);
@@ -40,9 +41,9 @@
 			return trim($slug, $replacement);
 		}
 		
-		public function getToken() {
-			return $this->token['access_token'];
-		}
+		// public function getToken() {
+		// 	return $this->token['access_token'];
+		// }
 		
 		public function setClientSecret(string $clientSecret): void {
 			$this->clientSecret = $clientSecret;
@@ -61,16 +62,16 @@
 		}
 		
 		public function getUsersSimple() {
-			$url = "$this->api/users?group_id=1574888&page_size=300";
 			$headers = [
-				"Authorization" => "Bearer " . $this->token['access_token']
+				"Authorization" => "Bearer " . $this->access_token
 			];
-			$users = $this->curl->request("GET", $url, "", $headers);
-			return $users;
+			
+			$this->curl->request("GET", "$this->api/users", "", $headers);
+			return $this->curl->body;
 		}
 		
 		public function getUsers() {
-			$users = $this->curl->get("$this->api/users?group_id=1574888&page_size=300", false, $this->token)['users'];
+			$users = $this->curl->get("$this->api/users?page_size=300")['users'];
 			
 			$users = array_map(function($item) {
 				$id = $item['id'];
@@ -118,10 +119,10 @@
 	$credentials = json_decode(file_get_contents('../config.json'))->pingboard;
 	
 	$pingboard = new Pingboard($credentials);
-	
-	//header('Content-Type: application/json');
-	echo $pingboard->getUsersSimple();
-	
-	//echo json_encode($pingboard->getUsersSimple()->json(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+	$users = $pingboard->getUsersSimple();
+		
+	header('Content-Type: application/json');
+	echo $users;
+	//echo json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 ?>

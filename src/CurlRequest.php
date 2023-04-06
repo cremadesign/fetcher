@@ -3,8 +3,16 @@
 	namespace Crema;
 	
 	class CurlRequest {
+		public $body;
+		
 		public function __construct() {
 			$this->ch = curl_init();
+			$this->requestHeaders = [];
+			$this->requestHeadersList = [
+				"Content-Type" => "application/json"
+			];
+			
+			return $this;
 		}
 		
 		public function stringify($json) {
@@ -29,10 +37,6 @@
 			return $headers;
 		}
 		
-		public function getHeaders() {
-			return headersToArray($this->headers);
-		}
-		
 		public function getErrors() {
 			if (isset($this->error))
 				return $this->error;
@@ -47,6 +51,14 @@
 			return $this->code;
 		}
 		
+		public function getResult() {
+			return $this->result;
+		}
+		
+		public function getBody() {
+			return $this->body;
+		}
+		
 		public function json() {
 			if (isset($this->error))
 				return $this->error;
@@ -54,21 +66,28 @@
 			return json_decode($this->body, true);
 		}
 		
+		public function object() {
+			if (isset($this->error))
+				return $this->error;
+			
+			return json_decode($this->body);
+		}
+		
 		public function getRequest() {
-			return headersToArray($this->request);
+			return $this->headersToArray($this->request);
 		}
 		
 		public function setRequestHeaders($headers = []) {
-			$this->requestHeaders = [];
-			$this->headers = array_merge([
-				"Content-Type" => "application/json"
-			], $headers);
+			$this->requestHeadersList = array_merge($this->requestHeadersList, $headers);
 			
-			foreach($this->headers as $key=>$val){
-				$this->requestHeaders[] = "$key: $val";
-			}
+			$this->requestHeaders = array_map(fn($k, $v) =>
+				"$k: $v", array_keys($this->requestHeadersList), $this->requestHeadersList);
 			
 			return $this->requestHeaders;
+		}
+		
+		public function getHeaders() {
+			return headersToArray($this->headers);
 		}
 		
 		public function getRequestHeaders() {
@@ -76,13 +95,13 @@
 		}
 		
 		public function request($type, $url, $payload = "", $headers = []) {
-			$headers = $this->setRequestHeaders($headers);
+			$this->setRequestHeaders($headers);
 			
 			$options = [
 				CURLOPT_CUSTOMREQUEST => $type,
 				CURLOPT_URL => $url,
 				CURLOPT_HTTP_VERSION => '1.1',
-				CURLOPT_HTTPHEADER => $headers,
+				CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
 				CURLOPT_HEADER => 1,
 				CURLINFO_HEADER_OUT => true,
 				CURLOPT_RETURNTRANSFER => 1,
@@ -95,6 +114,8 @@
 			
 			if ($payload) {
 				$options[CURLOPT_POSTFIELDS] = json_encode($payload);
+			} else {
+				unset($options[CURLOPT_POSTFIELDS]);
 			}
 			
 			curl_setopt_array($this->ch, $options);
@@ -102,13 +123,14 @@
 			$result = curl_exec($this->ch);
 			$header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
 			
+			$this->request = curl_getinfo($this->ch, CURLINFO_HEADER_OUT);
+			$this->result = $result;
+			$this->responseHeaders = substr($result, 0, $header_size);
+			$this->code = (int)substr($this->responseHeaders, 9, 3);
+			$this->body = substr($result, $header_size);
+			
 			if ($e = curl_error($this->ch)) {
 				$this->error = $e;
-			} else {
-				$this->request = curl_getinfo($this->ch, CURLINFO_HEADER_OUT);
-				$this->headers = substr($result, 0, $header_size);
-				$this->code = (int)substr($this->headers, 9, 3);
-				$this->body = substr($result, $header_size);
 			}
 			
 			curl_close($this->ch);
@@ -116,16 +138,20 @@
 			return $this;
 		}
 		
-		public function get($url, $payload = "") {
+		public function get($url, $payload = "", $headers = []) {
 			if ($payload) {
 				$url = "$url?" . http_build_query($payload);
 			}
 			
-			return $this->request("GET", $url, "");
+			return $this->request("GET", $url, "", $headers);
 		}
 		
-		public function post($url, $payload = "") {
-			return $this->request("POST", $url, $payload);
+		public function post($url, $payload = "", $headers = []) {
+			return $this->request("POST", $url, $payload, $headers);
+		}
+		
+		public function __toString() {
+			return $this->body;
 		}
 	}
 	
