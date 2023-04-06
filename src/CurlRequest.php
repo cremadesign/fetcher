@@ -3,16 +3,13 @@
 	namespace Crema;
 	
 	class CurlRequest {
-		public $body;
-		
 		public function __construct() {
-			$this->ch = curl_init();
 			$this->requestHeaders = [];
 			$this->requestHeadersList = [
 				"Content-Type" => "application/json"
 			];
 			
-			return $this;
+			//return $this;
 		}
 		
 		public function stringify($json) {
@@ -95,13 +92,14 @@
 		}
 		
 		public function request($type, $url, $payload = "", $headers = []) {
-			$this->setRequestHeaders($headers);
+			$this->ch = curl_init();
+			$this->requestHeaders = $this->setRequestHeaders($headers);
 			
 			$options = [
 				CURLOPT_CUSTOMREQUEST => $type,
 				CURLOPT_URL => $url,
 				CURLOPT_HTTP_VERSION => '1.1',
-				CURLOPT_HTTPHEADER => $this->getRequestHeaders(),
+				CURLOPT_HTTPHEADER => $this->requestHeaders,
 				CURLOPT_HEADER => 1,
 				CURLINFO_HEADER_OUT => true,
 				CURLOPT_RETURNTRANSFER => 1,
