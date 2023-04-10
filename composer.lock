@@ -4,12 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3be3254a9e29e0d5cb91b6f2ad2ccfb5",
-    "packages": [],
+    "content-hash": "05326cdb7354f9ca3114e420cd8f94e5",
+    "packages": [
+        {
+            "name": "crema/helpers",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cremadesign/helpers",
+                "reference": "fc5c59c73af73dd9dce646282cffe323a642ce87"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "Stephen Ginn",
+                    "email": "callaginn@users.noreply.github.com"
+                }
+            ],
+            "description": "PHP Helper Functions",
+            "time": "2023-04-10T19:08:52+00:00"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "crema/helpers": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

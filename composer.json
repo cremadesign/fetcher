@@ -12,5 +12,14 @@
 			"name": "Stephen Ginn",
 			"email": "callaginn@users.noreply.github.com"
 		}
-	]
+	],
+	"repositories": {
+		"crema/helpers": {
+			"type": "git",
+			"url": "https://github.com/cremadesign/helpers"
+		}
+	},
+	"require": {
+		"crema/helpers": "@dev"
+	}
 }

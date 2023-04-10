@@ -9,7 +9,7 @@
 				"Content-Type" => "application/json"
 			];
 			
-			//return $this;
+			return $this;
 		}
 		
 		public function stringify($json) {
