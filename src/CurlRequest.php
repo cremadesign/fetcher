@@ -110,8 +110,14 @@
 				$options[CURLOPT_SSL_VERIFYPEER] = false;
 			}
 			
-			if ($payload) {
-				$options[CURLOPT_POSTFIELDS] = json_encode($payload);
+			if ($type == "POST" and $payload) {
+				// Normalize Data
+				if (preg_match("/object|array/i", gettype($payload))) {
+					$payload = json_encode((array) $payload, JSON_PRETTIER);
+				}
+				
+				$options[CURLOPT_POST] = true;
+				$options[CURLOPT_POSTFIELDS] = $payload;
 			} else {
 				unset($options[CURLOPT_POSTFIELDS]);
 			}
