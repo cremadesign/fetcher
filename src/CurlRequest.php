@@ -84,7 +84,7 @@
 		}
 		
 		public function getHeaders() {
-			return headersToArray($this->headers);
+			return $this->headersToArray($this->responseHeaders);
 		}
 		
 		public function getRequestHeaders() {
