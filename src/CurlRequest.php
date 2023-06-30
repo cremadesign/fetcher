@@ -98,7 +98,7 @@
 			$options = [
 				CURLOPT_CUSTOMREQUEST => $type,
 				CURLOPT_URL => $url,
-				CURLOPT_HTTP_VERSION => '1.1',
+				// CURLOPT_HTTP_VERSION => '1.1',
 				CURLOPT_HTTPHEADER => $this->requestHeaders,
 				CURLOPT_HEADER => 1,
 				CURLINFO_HEADER_OUT => true,
