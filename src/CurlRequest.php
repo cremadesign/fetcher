@@ -4,10 +4,12 @@
 	
 	class CurlRequest {
 		public function __construct() {
-			$this->requestHeaders = [];
-			$this->requestHeadersList = [
+			$headers = [
 				"Content-Type" => "application/json"
 			];
+			
+			$this->requestHeadersList = $headers;
+			$this->requestHeaders = $this->addRequestHeaders($headers);
 			
 			return $this;
 		}
@@ -74,7 +76,7 @@
 			return $this->headersToArray($this->request);
 		}
 		
-		public function setRequestHeaders($headers = []) {
+		public function addRequestHeaders($headers = []) {
 			$this->requestHeadersList = array_merge($this->requestHeadersList, $headers);
 			
 			$this->requestHeaders = array_map(fn($k, $v) =>
@@ -83,22 +85,27 @@
 			return $this->requestHeaders;
 		}
 		
+		public function removeRequestHeaders() {
+			$this->requestHeaders = [];
+			$this->requestHeadersList = [];
+		}
+		
+		// Gets Response Headers
 		public function getHeaders() {
 			return $this->headersToArray($this->responseHeaders);
 		}
 		
 		public function getRequestHeaders() {
-			return $this->requestHeaders;
+			return $this->requestHeadersList;
 		}
 		
 		public function request($type, $url, $payload = "", $headers = []) {
 			$this->ch = curl_init();
-			$this->requestHeaders = $this->setRequestHeaders($headers);
+			$this->requestHeaders = $this->addRequestHeaders($headers);
 			
 			$options = [
 				CURLOPT_CUSTOMREQUEST => $type,
 				CURLOPT_URL => $url,
-				// CURLOPT_HTTP_VERSION => '1.1',
 				CURLOPT_HTTPHEADER => $this->requestHeaders,
 				CURLOPT_HEADER => 1,
 				CURLINFO_HEADER_OUT => true,
@@ -111,9 +118,11 @@
 			}
 			
 			if ($type == "POST" and $payload) {
-				// Normalize Data
-				if (preg_match("/object|array/i", gettype($payload))) {
-					$payload = json_encode((array) $payload, JSON_PRETTIER);
+				$contentType = $this->requestHeadersList['Content-Type'] ?? false;
+				
+				// Returns a string containing the JSON representation of the supplied value
+				if (! is_scalar($payload) && $contentType == 'application/json') {
+					$payload = json_encode((array) $payload);
 				}
 				
 				$options[CURLOPT_POST] = true;
