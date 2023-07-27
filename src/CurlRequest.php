@@ -2,7 +2,7 @@
 
 	namespace Crema;
 	
-	class CurlRequest {
+	class CurlRequest extends \stdClass {
 		public function __construct() {
 			$headers = [
 				"Content-Type" => "application/json"

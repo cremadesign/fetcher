@@ -3,7 +3,7 @@
 	namespace Crema;
 	
 	// Simple replacement for file_get_contents that bypasses SSL on localhost
-	class Fetcher {
+	class Fetcher extends \stdClass {
 		public function request($url, $json = true) {
 			if (strpos($_SERVER["HTTP_HOST"], '.test') !== false) {
 				$context = stream_context_create([
