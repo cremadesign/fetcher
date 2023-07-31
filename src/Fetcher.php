@@ -12,7 +12,7 @@
 					]
 				]);
 		
-				$contents = file_get_contents($url, FILE_TEXT, $context);
+				$contents = file_get_contents($url, false, $context);
 			} else {
 				$contents = file_get_contents($url);
 			}
