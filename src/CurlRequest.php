@@ -25,7 +25,7 @@
 		private function headersToArray($header_text) {
 			$headers = [];
 			$header_lines = array_filter(explode("\r\n", $header_text));
-		
+			
 			foreach ($header_lines as $i => $line) {
 				if ($i > 0) {
 					list ($key, $value) = explode(': ', $line);
@@ -44,9 +44,6 @@
 		}
 		
 		public function getCode() {
-			if (isset($this->error))
-				return $this->error;
-			
 			return $this->code;
 		}
 		
@@ -139,7 +136,7 @@
 			$this->request = curl_getinfo($this->ch, CURLINFO_HEADER_OUT);
 			$this->result = $result;
 			$this->responseHeaders = substr($result, 0, $header_size);
-			$this->code = (int)substr($this->responseHeaders, 9, 3);
+			$this->code = (int)curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 			$this->body = substr($result, $header_size);
 			
 			if ($e = curl_error($this->ch)) {
